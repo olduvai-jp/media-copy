@@ -166,13 +166,17 @@ const server = net.createServer(socket => {
 
   // main loop
   for(;;) {
-    const mediaDir = mediaQueue.pop()
-    if(mediaDir == null) {
-      await new Promise((s)=>{setTimeout(s, 1000)})
-      continue
+    try {
+      const mediaDir = mediaQueue.pop()
+      if(mediaDir == null) {
+        await new Promise((s)=>{setTimeout(s, 1000)})
+        continue
+      }
+      await onReceiveAdd(mediaDir);
+      await umountMedia(mediaDir); 
+    } catch (error) {
+      console.error(error)
     }
-    await onReceiveAdd(mediaDir);
-    await umountMedia(mediaDir);
   }
 })()
 
